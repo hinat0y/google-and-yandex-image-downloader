@@ -34,15 +34,19 @@ def search_yandex_images(driver, query, num_images=5):
             ActionChains(driver).send_keys('\ue00c').perform()
             time.sleep(1)
 
+            if len(image_urls) >= num_images:
+                break
+
         except Exception as e:
             print(f"Error retrieving image {index+1}: {e}")
 
-    return image_urls
+    return image_urls[:num_images]
 
 def download_images(image_urls, folder="images"):
     os.makedirs(folder, exist_ok=True)
 
     headers = {"User-Agent": "Mozilla/5.0"}
+    success_count = 0
     for i, url in enumerate(image_urls):
         image_path = f"{folder}/image_{i+1}.jpg"
 
@@ -53,7 +57,10 @@ def download_images(image_urls, folder="images"):
                     for chunk in response.iter_content(1024):
                         file.write(chunk)
                 print(f"Downloaded: {image_path}")
+                success_count += 1
             else:
                 print(f"Failed to download image {i+1}")
         except Exception as e:
             print(f"Error downloading image {i+1}: {e}")
+
+    return success_count

@@ -1,22 +1,26 @@
-from google_image_downloader import search_google_images, download_images
-from yandex_image_downloader import search_yandex_images
-from webdriver_setup import init_webdriver
+from gui import ImageDownloaderApp
+import sys
+import os
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QIcon
+
+# Windows-specific fix for taskbar icon
+if sys.platform == "win32":
+    import ctypes
+    myappid = "rot.front.google-and-yandex-image-downloader"
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 def main():
-    driver = init_webdriver()
-    search_query = "sunset"  # Change this to any search term
+    app = QApplication(sys.argv)
 
-    source = input("Search images from Google or Yandex? (g/y): ").strip().lower()
+    icon_path = os.path.join(os.getcwd(), "assets", "icon.png")
 
-    if source == "g":
-        image_links = search_google_images(driver, search_query)
-    else:
-        image_links = search_yandex_images(driver, search_query)
+    app.setWindowIcon(QIcon(icon_path))
 
-    if image_links:
-        download_images(image_links)
-
-    driver.quit()
+    window = ImageDownloaderApp()
+    window.setWindowIcon(QIcon(icon_path))
+    window.show()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     main()
